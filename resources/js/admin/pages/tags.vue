@@ -168,6 +168,7 @@ export default {
 	},
 
 	async created(){
+		console.log(this.isReadPermitted)
 		const res = await this.callApi('get', 'app/get_tags')
 		if(res.status === 200){
 			this.dataList = res.data

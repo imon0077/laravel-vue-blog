@@ -18,12 +18,15 @@
                 <!--~~~ MENU LIST ~~~~~~-->
                 <div class="_1side_menu_list">
                     <ul class="_1side_menu_list_ul">
-                        <li><router-link to="/"><Icon type="ios-speedometer" /> Dashboard</router-link></li>
-                        <li><router-link to="/tags"><Icon type="ios-speedometer" /> Tags</router-link></li>
+                        <li v-for="(menuItem, i) in permission" :key="i" v-if="permission.length && menuItem.read">
+                            <router-link :to="menuItem.name"><Icon type="ios-speedometer" /> {{menuItem.resourceName}}</router-link>
+                        </li>
+                        
+                        <!-- <li><router-link to="/tags"><Icon type="ios-speedometer" /> Tags</router-link></li>
                         <li><router-link to="/category"><Icon type="ios-speedometer" /> Category</router-link></li>
                         <li><router-link to="/admin-users"><Icon type="ios-speedometer" /> Admin Users</router-link></li>
                         <li><router-link to="/role"><Icon type="ios-speedometer" /> Role Management</router-link></li>
-                        <li><router-link to="/assign-role"><Icon type="ios-speedometer" /> Assign Role</router-link></li>
+                        <li><router-link to="/assign-role"><Icon type="ios-speedometer" /> Assign Role</router-link></li> -->
                         
                         <li><a href="/logout"><Icon type="ios-speedometer" /> Logout</a></li>
                     
@@ -54,17 +57,15 @@
 
 <script>
 export default {
-    //props: ['user', 'permission'],
-    props : ['user'],
+    props: ['user', 'permission'],
     data(){
        return {
           isLoggedIn : false,
        }
     },
     created(){
-        this.$store.commit('updateuser', this.user)
-    //    this.$store.commit('setUpdateUser', this.user)
-    //    this.$store.commit('setUserPermission', this.permission)
+        this.$store.commit('setUpdateUser', this.user)
+        this.$store.commit('setUserPermission', this.permission)
     }
 }
 </script>
