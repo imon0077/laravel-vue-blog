@@ -49,8 +49,24 @@ export default{
             });
         },
 
-        checkUserPermission(){
-            console.log(this.$route.name)
+        checkUserPermission(key){
+            ///console.log(this.$route.name)
+            //console.log(this.userPermission)
+            if(!this.userPermission) return true
+
+            let isPermitted = false
+            for(let d of this.userPermission){
+                if(this.$route.name == d.name){
+                    if(d[key]){
+                        isPermitted = true
+                        break
+                    }else{
+                        break
+                    }
+                }
+                
+            }
+            return isPermitted
         }
 
     },
@@ -61,17 +77,17 @@ export default{
         }),
 
         isReadPermitted(){
-            this.checkUserPermission()
+            return this.checkUserPermission('read')
             //console.log('user permission', this.userPermission)
         },
         isWritePermitted(){
-
+            return this.checkUserPermission('write')
         },
         isUpdatePermitted(){
-
+            return this.checkUserPermission('update')
         },
         isDeletePermitted(){
-
+            return this.checkUserPermission('delete')
         },
     },
 }

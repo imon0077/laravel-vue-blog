@@ -8,7 +8,7 @@
 					
 					<p class="_title0">
 						Tags 
-						<Button @click="addModal=true"><Icon type="md-add"/> Add tag</Button>
+						<Button @click="addModal=true" v-if="isWritePermitted"><Icon type="md-add"/> Add tag</Button>
 					</p>
 
 					<div class="_overflow _table_div">
@@ -28,8 +28,8 @@
 								<td class="_table_name">{{row.tagName}}</td>
 								<td>{{row.created_at}}</td>
 								<td>
-									<Button type="info" size="small" @click="showEditModal(row, i)">Edit</Button>
-									<Button type="error" size="small" @click="showdeletingModal(row, i)" :loading="row.isDeleting">Delete</Button>
+									<Button type="info" size="small" @click="showEditModal(row, i)" v-if="isUpdatePermitted">Edit</Button>
+									<Button type="error" size="small" @click="showDeletingModal(row, i)" :loading="row.isDeleting" v-if="isDeletePermitted">Delete</Button>
 								</td>
 							</tr>
 								<!-- ITEMS -->
@@ -155,7 +155,7 @@ export default {
 			 this.index = index
 		},
 
-		showdeletingModal(row, index){
+		showDeletingModal(row, index){
 			const deleteModalObj  = {
 				showDeleteModal : true,
 				deleteUrl :  'app/delete_tag',
@@ -168,7 +168,7 @@ export default {
 	},
 
 	async created(){
-		console.log(this.isReadPermitted)
+		//console.log(this.isWritePermitted)
 		const res = await this.callApi('get', 'app/get_tags')
 		if(res.status === 200){
 			this.dataList = res.data
@@ -186,7 +186,7 @@ export default {
 	watch : {
 		getDeleteModalObj(obj){
 			if(obj.isDeleted){
-				this.dataList.splice(obj.deletingIndex, 1)
+				this.dataList.splice(this.deletingIndex,1)
 			}
 		}
 	}

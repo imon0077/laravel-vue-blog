@@ -42,14 +42,32 @@ Route::prefix('app')->middleware([AdminCheck::class])->group(function(){
 
     Route::post('/assign-role', 'RoleController@assignRole');
 
+    // blog
+    Route::post('create-blog', 'TagController@createBlog');
+    Route::get('blogsdata', 'TagController@blogdata'); // get the blog item
+    Route::post('delete_blog', 'TagController@deleteBlog');
+    Route::get('blog_single/{id}', 'TagController@singleBlogItem');
+    Route::post('update_blog/{id}', 'TagController@updateBlog');
+
     //login 
     Route::post('/admin_login', 'TagController@adminLogin');
 });
 
 
+Route::post('createBlog', 'TagController@uploadEditorImage');
+Route::get('slug','TagController@slug');
+Route::get('blogdata', 'TagController@blogdata');
+
+
 Route::get('/logout', 'TagController@logout');
 Route::get('/', 'TagController@index');
-Route::any('{slug}', 'TagController@index');
+//Route::any('{slug}', 'TagController@index')->where('slug', '([A-z\d-\/_.]+)?');
+//Route::any('{slug}', 'TagController@index')->where('path','[-a-z0-9_\s]+');
+Route::any('{slug}', 'TagController@index')->where('slug', '([-a-z/0-9_\s]+)');
+
+//Route::any('{slug}', 'TagController@index')->where('slug', '([A-z\d-\/_.]+)');
+//Route::get('{slug}',"TagController@index")->where('path','([-A-Z0-9_\s]+)');
+//Route::any('{slug}', 'TagController@index');
 
 
 

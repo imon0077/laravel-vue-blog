@@ -35,7 +35,7 @@
                 this.isDeleting = true
                 const res = await this.callApi('post', this.getDeleteModalObj.deleteUrl, this.getDeleteModalObj.data)
                 if(res.status === 200){
-                    this.s('Tag has been deleted successfully')
+                    this.s('Data has been deleted successfully')
                     this.$store.commit('setDeleteModal', true)
                 }
                 else{

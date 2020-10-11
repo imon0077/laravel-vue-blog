@@ -8,7 +8,7 @@
 					
 					<p class="_title0">
 						Category 
-						<Button @click="addModal=true"><Icon type="md-add"/> Add Category</Button>
+						<Button @click="addModal=true" v-if="isWritePermitted"><Icon type="md-add"/> Add Category</Button>
 					</p>
 
 					<div class="_overflow _table_div">
@@ -32,8 +32,8 @@
 								<td class="_table_name">{{row.categoryName}}</td>
 								<td>{{row.created_at}}</td>
 								<td>
-									<Button type="info" size="small" @click="showEditModal(row, i)">Edit</Button>
-									<Button type="error" size="small" @click="showdeletingModal(row, i)" :loading="row.isDeleting">Delete</Button>
+									<Button type="info" size="small" @click="showEditModal(row, i)" v-if="isUpdatePermitted">Edit</Button>
+									<Button type="error" size="small" @click="showdeletingModal(row, i)" :loading="row.isDeleting" v-if="isDeletePermitted">Delete</Button>
 								</td>
 							</tr>
 								<!-- ITEMS -->

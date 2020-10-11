@@ -9,10 +9,16 @@ import methods from './components/pages/basic/methods'
 import home from './components/pages/home'
 import tags from './admin/pages/tags'
 import category from './admin/pages/category'
+
+import createBlog from './admin/pages/create-blog'
+import editBlog from './admin/pages/edit-blog'
+import blogs from './admin/pages/blogs'
+
 import adminusers from './admin/pages/adminusers'
 import login from './admin/pages/login'
 import role from './admin/pages/role'
 import assignRole from './admin/pages/assignRole'
+import notfound from './admin/pages/notfound'
 
 
 const routes = [
@@ -32,6 +38,38 @@ const routes = [
         component: category,
         name: 'category'
     }, 
+
+
+
+
+
+    {
+        path: '/create-blog', 
+        component: createBlog,
+        name: 'create-blog'
+    }, 
+    {
+        path: '/editblog/:id', 
+        component: editBlog,
+        name: 'editblog'
+    }, 
+    {
+        path: '/blogs', 
+        component: blogs,
+        name: 'blogs'
+    }, 
+
+    {
+        path: '*',
+        component: notfound,
+        name: 'notfound'
+
+    },
+
+
+
+
+
     {
         path: '/admin-users', 
         component: adminusers,

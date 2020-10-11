@@ -61,6 +61,9 @@ export default {
 				{resourceName: 'Tags', read: false, write: false, update: false, delete: false, name: 'tags'},
 				{resourceName: 'Category', read: false, write: false, update: false, delete: false, name: 'category'},
 				{resourceName: 'Admin Users', read: false, write: false, update: false, delete: false, name: 'admin-users'},
+				{resourceName: 'Create Blog', read: false, write: false, update: false, delete: false, name: 'create-blog'},
+				{resourceName: 'Blogs', read: false, write: false, update: false, delete: false, name: 'blogs'},
+
 				{resourceName: 'Role', read: false, write: false, update: false, delete: false, name: 'role'},
 				{resourceName: 'Assign Role', read: false, write: false, update: false, delete: false, name: 'assign-role'},
 			],
@@ -70,6 +73,9 @@ export default {
 				{resourceName: 'Tags', read: false, write: false, update: false, delete: false, name: 'tags'},
 				{resourceName: 'Category', read: false, write: false, update: false, delete: false, name: 'category'},
 				{resourceName: 'Admin Users', read: false, write: false, update: false, delete: false, name: 'admin-users'},
+				{resourceName: 'Create Blog', read: false, write: false, update: false, delete: false, name: 'create-blog'},
+				{resourceName: 'Blogs', read: false, write: false, update: false, delete: false, name: 'blogs'},
+
 				{resourceName: 'Role', read: false, write: false, update: false, delete: false, name: 'role'},
 				{resourceName: 'Assign Role', read: false, write: false, update: false, delete: false, name: 'assign-role'},
 			],
@@ -109,6 +115,7 @@ export default {
 				this.data.id = res.data[0].id
 				if(res.data[0].permission){
 					this.dataList = JSON.parse(res.data[0].permission)
+					//this.dataList = this.defaultPermission
 				}
 			}
 			else{

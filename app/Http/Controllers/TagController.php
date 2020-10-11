@@ -7,31 +7,61 @@ use App\Tag;
 use App\Category;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use App\Blog;
+use App\Blogcategory;
+use App\Blogtag;
+use Illuminate\Support\Facades\DB;
 
 class TagController extends Controller
 {
 
+    // public function index(Request $request)
+    // {
+    //     //check isLoggedin and isAdmin user 
+    //     if(!Auth::check() && $request->path() != 'login'){
+    //         return redirect('/login');
+    //     }
+
+    //     if(!Auth::check() && $request->path() == 'login'){
+    //         return view('welcome');
+    //     }
+
+    //     //you are already logged in...so check that you are an admin user 
+    //     $user = Auth::user();
+    //     if($user->userType == 'User'){
+    //         return redirect('/login');
+    //     }
+
+    //     if($request->path() == 'login'){
+    //         return redirect('/');
+    //     }
+    //     //return view('welcome');
+    //     return $this->checkForPermission($user, $request);
+    // }
+
     public function index(Request $request)
     {
-        //check isLoggedin and isAdmin user 
-        if(!Auth::check() && $request->path() != 'login'){
+
+        // first check if you are loggedin and admin user ...
+        //return Auth::check();
+
+        if (!Auth::check() && $request->path() != 'login') {
             return redirect('/login');
         }
 
-        if(!Auth::check() && $request->path() == 'login'){
+        if (!Auth::check() && $request->path() == 'login') {
+
             return view('welcome');
         }
-
-        //you are already logged in...so check that you are an admin user 
+        // you are already logged in... so check for if you are an admin user..
         $user = Auth::user();
-        if($user->userType == 'User'){
+        if ($user->userType == 'User') {
             return redirect('/login');
         }
-
-        if($request->path() == 'login'){
+        if ($request->path() == 'login') {
             return redirect('/');
         }
-        //return view('welcome');
+
         return $this->checkForPermission($user, $request);
     }
 
@@ -44,7 +74,7 @@ class TagController extends Controller
             return view('welcome');
         }
 
-        foreach ($permission as $p) {
+        foreach ($permission as $p) {            
             if ($p->name == $request->path()) {
                 if ($p->read) {
                     $hasPermission = true;
@@ -122,6 +152,26 @@ class TagController extends Controller
         $request->file->move(public_path('uploads'), $picName);
         return $picName;
     }
+
+
+    // upload image from editor.js
+    public function uploadEditorImage(Request $request)
+    {
+        $this->validate($request, [
+            'image' => 'required|mimes:jpeg,jpg,png',
+        ]);
+        $picName = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('uploads'), $picName);
+        return response()->json([
+            'success' => 1,
+            'file' => [
+                'url' => "http://fullstack.test/uploads/$picName",
+            ],
+        ]);
+        return $picName;
+    }
+
+    
 
     public function deleteImage(Request $request)
     {
@@ -266,5 +316,130 @@ class TagController extends Controller
             ], 401);
         }
     }
+
+
+
+    //Blog 
+    public function createBlog(Request $request)
+    {
+        $this->validate($request, [
+            'title' => 'required',
+            'post' => 'required',
+            'post_excerpt' => 'required',
+            'metaDescription' => 'required',
+            'jsonData' => 'required',
+            'category_id' => 'required',
+            'tag_id' => 'required',
+        ]);
+        $categories = $request->category_id;
+        $tags = $request->tag_id;
+
+        $blogCategories = [];
+        $blogTags = []; 
+
+        DB::beginTransaction();
+        try {
+            $blog = Blog::create([
+                'title' => $request->title,
+                'slug' => $request->title,
+                'post' => $request->post,
+                'post_excerpt' => $request->post_excerpt,
+                'user_id' => Auth::user()->id,
+                'metaDescription' => $request->metaDescription,
+                'jsonData' => $request->jsonData,
+            ]);
+            // insert blog categories
+            foreach ($categories as $c) {
+                array_push($blogCategories, ['category_id' => $c, 'blog_id' => $blog->id]);
+            }
+            Blogcategory::insert($blogCategories);
+            // insert blog tags
+            foreach ($tags as $t) {
+                array_push($blogTags, ['tag_id' => $t, 'blog_id' => $blog->id]);
+            }
+            Blogtag::insert($blogTags);
+
+            DB::commit();
+            return 'done';
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return 'not done';
+        }
+
+    }
+
+    // update blog
+    public function updateBlog(Request $request, $id)
+    {
+        $this->validate($request, [
+            'title' => 'required',
+            'post' => 'required',
+            'post_excerpt' => 'required',
+            'metaDescription' => 'required',
+            'jsonData' => 'required',
+            'category_id' => 'required',
+            'tag_id' => 'required',
+        ]);
+        $categories = $request->category_id;
+        $tags = $request->tag_id;
+        $blogCategories = [];
+        $blogTags = [];
+
+        DB::beginTransaction();
+        try {
+            $blog = Blog::where('id', $id)->update([
+                'title' => $request->title,
+                'slug' => $request->title,
+                'post' => $request->post,
+                'post_excerpt' => $request->post_excerpt,
+                'user_id' => Auth::user()->id,
+                'metaDescription' => $request->metaDescription,
+                'jsonData' => $request->jsonData,
+            ]);
+
+
+            // insert blog categories
+            foreach ($categories as $c) {
+                array_push($blogCategories, ['category_id' => $c, 'blog_id' => $id]);
+            }
+            // delete all previous categories
+            Blogcategory::where('blog_id', $id)->delete();
+            Blogcategory::insert($blogCategories);
+            // insert blog tags
+            foreach ($tags as $t) {
+                array_push($blogTags, ['tag_id' => $t, 'blog_id' => $id]);
+            }
+            Blogtag::where('blog_id', $id)->delete();
+            Blogtag::insert($blogTags);
+            DB::commit();
+            return 'done';
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+            return 'not done';
+        }
+    }
+
+
+    public function blogdata()
+    {
+        return Blog::with(['tag', 'cat'])->orderBy('id', 'desc')->get();
+    }
+
+    public function deleteBlog(Request $request)
+    {
+        //validate 
+        $this->validate($request, [
+            'id'    =>  'required'
+        ]);
+        
+        return Blog::where('id', $request->id)->delete();
+    }
+    
+    public function singleBlogItem(Request $request, $id){
+        return Blog::with(['tag', 'cat'])->where('id', $id)->first();
+    }
+
+
 
 }
